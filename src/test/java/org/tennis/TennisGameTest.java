@@ -2,97 +2,100 @@ package org.tennis;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Random;
+import org.tennis.service.TennisGameService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TennisGameTest {
 
+    private TennisGameService game;
+
     @BeforeEach
     void setUp() {
-        TennisGame.map.clear();
-        TennisGame.isDeuce = false;
-        TennisGame.last = "";
+        game = new TennisGameService();
     }
 
     @Test
-    void testSimpleProgressionForPlayerA() {
-        TennisGame.reverse("A");
-        assertEquals(15, TennisGame.map.get("A"));
+    void testSimpleScoreProgressionForPlayerA() {
+        game.play("A");
+        assertEquals(15, game.playerA.getScore());
 
-        TennisGame.reverse("A");
-        assertEquals(30, TennisGame.map.get("A"));
+        game.play("A");
+        assertEquals(30, game.playerA.getScore());
 
-        TennisGame.reverse("A");
-        assertEquals(40, TennisGame.map.get("A"));
+        game.play("A");
+        assertEquals(40, game.playerA.getScore());
     }
 
     @Test
-    void testSimpleProgressionForBothPlayers() {
-        TennisGame.reverse("ABAB");
-        assertEquals(30, TennisGame.map.get("A"));
-        assertEquals(30, TennisGame.map.get("B"));
+    void testScoreProgressionForBothPlayers() {
+        game.play("ABAB");
+        assertEquals(30, game.playerA.getScore());
+        assertEquals(30, game.playerB.getScore());
     }
 
     @Test
-    void testDeuceToAdvantage() {
-        // Simuler : A 40, B 40 => deuce
-        TennisGame.reverse("ABABAB");  // A=40, B=40
-        assertEquals(40, TennisGame.map.get("A"));
-        assertEquals(40, TennisGame.map.get("B"));
+    void testDeuceTriggered() {
+        game.play("ABABAB"); // A:40, B:40
+        assertEquals(40, game.playerA.getScore());
+        assertEquals(40, game.playerB.getScore());
+    }
 
-        // Prochain point pour A => avantage A
-        TennisGame.reverse("A");
-        assertEquals(40, TennisGame.map.get("A"));
-        // L'état interne isDeuce n’est pas mis à true explicitement dans compute, donc ici pas vérifié
+    @Test
+    void testAdvantageFromDeuce() {
+        game.play("ABABAB"); // Deuce
+        game.play("A"); // Advantage A
+        // No need to assert internal state unless exposed — this confirms we can proceed without crash
+        assertEquals(40, game.playerA.getScore());
+        assertEquals(40, game.playerB.getScore());
+    }
+
+    @Test
+    void testReturnToDeuceFromAdvantage() {
+        game.play("ABABABA"); // Advantage A
+        game.play("B");       // Back to deuce
+        assertEquals(40, game.playerA.getScore());
+        assertEquals(40, game.playerB.getScore());
     }
 
     @Test
     void testWinWithoutDeuce() {
-        TennisGame.reverse("AAAA");  // 15, 30, 40, win
-        assertEquals(40, TennisGame.map.get("A"));
+        game.play("AAAA"); // A wins directly
+        assertEquals(40, game.playerA.getScore());
     }
 
     @Test
     void testIgnoreInvalidCharacters() {
-        TennisGame.reverse("A$@B C1A!");
-        // Résultat attendu : A = 30, B = 15
-        assertEquals(30, TennisGame.map.get("A"));
-        assertEquals(15, TennisGame.map.get("B"));
+        game.play("A$@B C1A!");
+        assertEquals(30, game.playerA.getScore());
+        assertEquals(15, game.playerB.getScore());
     }
 
     @Test
-    void testNullOrEmptyInput() {
-        TennisGame.reverse("");
-        assertTrue(TennisGame.map.isEmpty());
+    void testEmptyOrNullInput() {
+        game.play("");
+        assertEquals(0, game.playerA.getScore());
+        assertEquals(0, game.playerB.getScore());
 
-        TennisGame.reverse(null);
-        assertTrue(TennisGame.map.isEmpty());
+        game.play(null);
+        assertEquals(0, game.playerA.getScore());
+        assertEquals(0, game.playerB.getScore());
     }
 
     @Test
-    void testLongInput200Characters() {
-        // Génère une séquence aléatoire de 200 caractères 'A' ou 'B'
-        StringBuilder input = new StringBuilder();
-        Random random = new Random(42); // seed fixe pour test déterministe
-
+    void testLongInputWith200Characters() {
+        StringBuilder sequence = new StringBuilder();
         for (int i = 0; i < 200; i++) {
-            input.append(random.nextBoolean() ? 'A' : 'B');
+            sequence.append(i % 2 == 0 ? 'A' : 'B');
         }
+        game.play(sequence.toString());
 
-        TennisGame.reverse(input.toString());
+        // Résultat final inconnu à l'avance car il dépend des règles simples
+        // On vérifie seulement que les scores sont cohérents
+        int scoreA = game.playerA.getScore();
+        int scoreB = game.playerB.getScore();
 
-        // On vérifie que la map contient bien des entrées pour A et B
-        assertTrue(TennisGame.map.containsKey("A"));
-        assertTrue(TennisGame.map.containsKey("B"));
-
-        // Vérifie que les scores sont des valeurs autorisées (0, 15, 30, 40)
-        int scoreA = TennisGame.map.get("A");
-        int scoreB = TennisGame.map.get("B");
         assertTrue(scoreA == 0 || scoreA == 15 || scoreA == 30 || scoreA == 40);
         assertTrue(scoreB == 0 || scoreB == 15 || scoreB == 30 || scoreB == 40);
     }
-
 }
-

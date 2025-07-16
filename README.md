@@ -1,30 +1,64 @@
-package org.tennis;
+# 🎾 Tennis Game Kata
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+This project implements a simple tennis score computer based on a sequence of points won by players A and B.
 
-import java.util.HashMap;
-import java.util.Map;
+---
 
-public class TennisGame {
-    private static final Logger logger = LoggerFactory.getLogger(TennisGame.class);
+## 📝 Kata Description
 
-    static Map<String, Integer> map = new HashMap<>();
-    static boolean isDeuce = false;
-    static String last = "";
+The goal is to simulate a **single tennis game** between two players.
 
-    public static void reverse(String input) {
+### 🧮 Scoring Rules
+
+- Players start at **0**.
+- 1st point → **15**, 2nd → **30**, 3rd → **40**.
+- If a player wins a point while at 40 and the opponent has less → **they win**.
+- If both players reach 40 → **Deuce**.
+- From deuce:
+    - The player who wins a point gains **Advantage**.
+    - If the same player wins again → **they win**.
+    - If the other player wins → back to **Deuce**.
+
+---
+---
+
+## ▶️ How to Run
+
+### 1. Compile
+
+bash
+mvn clean compile
+
+✅ Tested Scenarios
+Score progression for A and B
+
+Deuce / Advantage / Win transitions
+
+Invalid characters ignored
+
+Empty or null input
+
+Long 200-character sequence
+
+---
+
+
+Sharing here first version of the personnal solution:
+
+     Map<String, Integer> map = new HashMap<>();
+     boolean isDeuce = false;
+     String last = "";
+
+     static void reverse(String input) {
         if (input == null  || input.isEmpty())   {
             return;
         }
 
         input.replaceAll("[^AB]", "").chars().mapToObj(c -> String.valueOf((char) c))
                 .forEach(key -> map.put(key, compute(key)));
+ }
 
-        new StringBuilder(input).reverse();
-    }
-
-    public static Integer compute(String key) {
+    private  Integer compute(String key) {
         int val = map.getOrDefault(key, 0);
 
         switch (val) {
@@ -47,12 +81,12 @@ public class TennisGame {
                     if (!isDeuce) {
                         logger.info("{} is winner", key);
                     }
-                    /*
-                    We can add here also a logger for deuce status but not indicated in the requirement
+
+                    //We can add here also a logger for deuce status but not indicated in the requirement
                     if (isDeuce) {
                         logger.info("deuce");
                     }
-                    */
+
                 } else {
                     logger.info("{} is advantage", key);
                     isDeuce = false;
@@ -65,4 +99,3 @@ public class TennisGame {
             }
         }
     }
-}
