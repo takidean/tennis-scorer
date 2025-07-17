@@ -16,11 +16,15 @@ public class Player {
         }
     }
 
+    public int getScore() {
+        return score;
+    }
+
     public String getName() {
         return name;
     }
 
-    public int getScore() {
-        return score;
+    public void resetScore() {
+        score = 0;
     }
 }
