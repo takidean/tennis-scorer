@@ -1,52 +1,26 @@
-import org.junit.jupiter.api.Test;
-import org.tennis.state.AdvantageState;
-import org.tennis.state.DeuceState;
-import org.tennis.state.TennisGameContext;
-import org.tennis.model.Player;
+package org.tennis.state;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
 
-class DeuceStateTest {
+import static org.junit.Assert.assertEquals;
+
+public class DeuceStateTest {
 
     @Test
-    void pointWonBy_playerAWins_shouldMoveToAdvantageStateForPlayerA() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(3);
-        playerB.setScore(3);
-        context.setGameState(new DeuceState(context));
+    public void testPointWonreturnAdvantage() {
 
-        context.pointWonBy("A");
+        TennisGameContext context = new TennisGameContext("A","B");
+        context.getPlayerA().advanceScore();
+        context.getPlayerA().advanceScore();
 
-        assertTrue(context.getGameState() instanceof AdvantageState);
-        assertEquals(playerA, context.getAdvantagePlayer());
-    }
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
 
-    @Test
-    void pointWonBy_playerBWins_shouldMoveToAdvantageStateForPlayerB() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(3);
-        playerB.setScore(3);
-        context.setGameState(new DeuceState(context));
+        DeuceState deuceState = new DeuceState();
+        deuceState.pointWonBy(context.getPlayerA(), context);
 
-        context.pointWonBy("B");
-
-        assertTrue(context.getGameState() instanceof AdvantageState);
-        assertEquals(playerB, context.getAdvantagePlayer());
-    }
-
-    @Test
-    void getScore_shouldReturnDeuce() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(3);
-        playerB.setScore(3);
-        context.setGameState(new DeuceState(context));
-
-        assertEquals("Deuce", context.getScore());
+        // assume GameWonState is implemented correctly
+        assertEquals("Advantage A", context.getScore());
     }
 }

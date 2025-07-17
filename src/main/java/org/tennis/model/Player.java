@@ -13,6 +13,7 @@ public class Player {
             case 0 -> score = 15;
             case 15 -> score = 30;
             case 30 -> score = 40;
+            default -> score =50;
         }
     }
 

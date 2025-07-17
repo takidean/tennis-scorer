@@ -19,7 +19,7 @@ public class NormalState implements GameState {
 
     @Override
     public String getScore(TennisGameContext context) {
-        return String.format("%s: %d - %s: %d",
+        return String.format("Player %s: %d/Player %s: %d",
                 context.getPlayerA().getName(), context.getPlayerA().getScore(),
                 context.getPlayerB().getName(), context.getPlayerB().getScore());
     }

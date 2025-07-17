@@ -6,6 +6,6 @@ public class Main {
 
     public static void main(String[] args) {
         TennisGameService tennisGame= new TennisGameService();
-        tennisGame.play("ABA;BABCVABBBbbbb");
+        tennisGame.play("AAAA");
     }
 }

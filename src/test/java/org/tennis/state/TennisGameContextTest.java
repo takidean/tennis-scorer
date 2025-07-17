@@ -1,70 +1,32 @@
 package org.tennis.state;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.tennis.state.TennisGameContext;
-import org.tennis.state.GameState;
-import org.tennis.state.NormalState;
 import org.tennis.model.Player;
+import org.tennis.state.GameState;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
 
-class TennisGameContextTest {
+public class TennisGameContextTest {
 
     @Test
-    void constructor_shouldInitializePlayersAndState() {
+    public void  ScoreChanged() {
         TennisGameContext context = new TennisGameContext("A", "B");
-        assertNotNull(context.getPlayerA());
-        assertNotNull(context.getPlayerB());
-        assertEquals("A", context.getPlayerA().getName());
-        assertEquals("B", context.getPlayerB().getName());
-        assertTrue(context.getGameState() instanceof NormalState); // Initial state should be NormalState
+        context.pointWonBy("A");
+        assertEquals(15,context.getPlayerA().getScore());
+        assertEquals(false,context.isFinish);
     }
 
     @Test
-    void pointWonBy_shouldDelegateToCurrentState() {
+    public void  ScoreB() {
         TennisGameContext context = new TennisGameContext("A", "B");
-        GameState mockState = mock(GameState.class);
-        context.setGameState(mockState);
-
+        context.pointWonBy("A");
+        context.pointWonBy("A");
+        context.pointWonBy("A");
         context.pointWonBy("A");
 
-        verify(mockState).pointWonBy("A");
+        assertEquals(true,context.isFinish);
     }
 
-    @Test
-    void getScore_shouldDelegateToCurrentState() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        GameState mockState = mock(GameState.class);
-        when(mockState.getScore()).thenReturn("Test Score");
-        context.setGameState(mockState);
 
-        String score = context.getScore();
-
-        assertEquals("Test Score", score);
-        verify(mockState).getScore();
-    }
-
-    @Test
-    void updateGameState_shouldChangeStateBasedOnScores() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-
-        playerA.setScore(4); // Example score to trigger state change
-        playerB.setScore(2);
-        context.updateGameState();
-
-        // Add assertions to check the new state, e.g., if it's GameWonState or AdvantageState
-    }
-
-    @Test
-    void setGameState_shouldUpdateGameState() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        GameState mockState = mock(GameState.class);
-
-        context.setGameState(mockState);
-
-        assertEquals(mockState, context.getGameState());
-    }
 }

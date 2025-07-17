@@ -16,6 +16,6 @@ public class GameWonState implements GameState {
 
     @Override
     public String getScore(TennisGameContext context) {
-        return winner.getName() + " wins";
+        return "Player " + winner.getName() + " wins the game";
     }
 }

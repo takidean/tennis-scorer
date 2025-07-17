@@ -1,94 +1,43 @@
-import org.junit.jupiter.api.Test;
-import org.tennis.state.NormalState;
-import org.tennis.state.DeuceState;
-import org.tennis.state.AdvantageState;
-import org.tennis.state.GameWonState;
-import org.tennis.state.TennisGameContext;
-import org.tennis.model.Player;
+package org.tennis.state;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
 
-class NormalStateTest {
+import static org.junit.Assert.assertEquals;
+
+
+public class NormalStateTest {
 
     @Test
-    void pointWonBy_playerAWins_shouldUpdateScore() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        context.setGameState(new NormalState(context));
+    public void testPointWonBy_Deuce() {
 
-        int initialScore = playerA.getScore();
-        context.pointWonBy("A");
+        TennisGameContext context = new TennisGameContext("A","B");
+        context.getPlayerA().advanceScore();
+        context.getPlayerA().advanceScore();
 
-        assertEquals(initialScore + 1, playerA.getScore());
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+
+        NormalState normalState = new NormalState();
+        normalState.pointWonBy(context.getPlayerA(), context);
+
+        // assume GameWonState is implemented correctly
+        assertEquals("Deuce", context.getScore());
     }
 
     @Test
-    void pointWonBy_playerBWins_shouldUpdateScore() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        context.setGameState(new NormalState(context));
+    public void testPointWonBy_GameWon() {
 
-        int initialScore = playerB.getScore();
-        context.pointWonBy("B");
+        TennisGameContext context = new TennisGameContext("A","B");
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
 
-        assertEquals(initialScore + 1, playerB.getScore());
+        NormalState normalState = new NormalState();
+        normalState.pointWonBy(context.getPlayerA(), context);
+
+        // assume GameWonState is implemented correctly
+        assertEquals("A: 15 - B: 40", context.getScore());
     }
 
-    @Test
-    void updateGameState_bothPlayersHave40_shouldMoveToDeuceState() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(3);
-        playerB.setScore(3);
-        context.setGameState(new NormalState(context));
-
-        context.updateGameState();
-
-        assertTrue(context.getGameState() instanceof DeuceState);
-    }
-
-    @Test
-    void updateGameState_playerAHasAdvantage_shouldMoveToAdvantageState() {
-         TennisGameContext context = new TennisGameContext("A", "B");
-         Player playerA = context.getPlayer1();
-         Player playerB = context.getPlayer2();
-         playerA.setScore(4);
-         playerB.setScore(3);
-         context.setGameState(new NormalState(context));
-
-         context.updateGameState();
-
-         assertTrue(context.getGameState() instanceof AdvantageState);
-    }
-
-    @Test
-    void updateGameState_playerAWins_shouldMoveToGameWonState() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(4);
-        playerB.setScore(2);
-        context.setGameState(new NormalState(context));
-
-        context.updateGameState();
-
-        assertTrue(context.getGameState() instanceof GameWonState);
-        assertEquals(playerA, context.getWinner());
-    }
-
-    @Test
-    void getScore_shouldReturnFormattedScore() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        context.setGameState(new NormalState(context));
-        playerA.setScore(1);
-        playerB.setScore(2);
-
-        // Mocking getScore is not necessary, we can directly assert based on player scores
-        assertEquals("15-30", context.getScore());
-    }
 }

@@ -1,69 +1,47 @@
-import org.junit.jupiter.api.Test;
-import org.tennis.state.AdvantageState;
-import org.tennis.state.DeuceState;
-import org.tennis.state.GameWonState;
-import org.tennis.state.TennisGameContext;
-import org.tennis.model.Player;
+package org.tennis.state;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
 
-class AdvantageStateTest {
+import static org.junit.Assert.assertEquals;
+
+public class AdvantageStateTest {
 
     @Test
-    void pointWonBy_playerWithAdvantageWins_shouldMoveToWinState() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(4); // Simulate advantage for player A
-        playerB.setScore(3);
-        context.setAdvantagePlayer(playerA);
-        context.setGameState(new AdvantageState(context));
+    public void testPointWonreturnAWins() {
 
-        context.pointWonBy("A");
+        TennisGameContext context = new TennisGameContext("A","B");
+        context.getPlayerA().advanceScore();
+        context.getPlayerA().advanceScore();
+        context.getPlayerA().advanceScore();
 
-        assertTrue(context.getGameState() instanceof GameWonState);
-        assertEquals(playerA, context.getWinner());
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+
+        AdvantageState advantageState = new AdvantageState(context.getPlayerA());
+        advantageState.pointWonBy(context.getPlayerA(), context);
+
+        // assume GameWonState is implemented correctly
+        assertEquals("A wins", context.getScore());
     }
 
     @Test
-    void pointWonBy_otherPlayerWins_shouldMoveToDeuceState() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(4);
-        playerB.setScore(3);
-        context.setAdvantagePlayer(playerA);
-        context.setGameState(new AdvantageState(context));
+    public void testPointWonreturnDeuce() {
 
-        context.pointWonBy("B");
+        TennisGameContext context = new TennisGameContext("A","B");
+        context.getPlayerA().advanceScore();
+        context.getPlayerA().advanceScore();
 
-        assertTrue(context.getGameState() instanceof DeuceState);
-        assertNull(context.getAdvantagePlayer());
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+        context.getPlayerB().advanceScore();
+
+        AdvantageState advantageState = new AdvantageState(context.getPlayerA());
+        advantageState.pointWonBy(context.getPlayerB(), context);
+
+        // assume GameWonState is implemented correctly
+        assertEquals("Deuce", context.getScore());
     }
 
-    @Test
-    void getScore_playerAHasAdvantage_shouldReturnCorrectScore() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(4);
-        playerB.setScore(3);
-        context.setAdvantagePlayer(playerA);
-        context.setGameState(new AdvantageState(context));
 
-        assertEquals("Advantage A", context.getScore());
-    }
-
-    @Test
-    void getScore_playerBHasAdvantage_shouldReturnCorrectScore() {
-        TennisGameContext context = new TennisGameContext("A", "B");
-        Player playerA = context.getPlayer1();
-        Player playerB = context.getPlayer2();
-        playerA.setScore(3);
-        playerB.setScore(4);
-        context.setAdvantagePlayer(playerB);
-        context.setGameState(new AdvantageState(context));
-
-        assertEquals("Advantage B", context.getScore());
-    }
 }
