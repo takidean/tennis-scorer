@@ -22,6 +22,29 @@ The goal is to simulate a **single tennis game** between two players.
 ---
 ---
 
+
+Quelle est la taille maximale que la chaîne de caractères peut atteindre dans ce kata ? Théoriquement, une String peut contenir jusqu’à 2 milliards de caractères, mais dans le contexte d’un match de tennis, ce serait irréaliste et risqué (risque de OutOfMemoryError).
+
+
+Q: what design pattern used for this Kata
+I used the State design pattern to make the scoring changing and avoid many dependencies and static shared variables
+used to make simple architecture to keep open for modification in case we need to develop scorer for all game
+
+Q: Quel est le comportement attendu si la chaîne de caractères reçue contient, par erreur de saisie, d’autres caractères que A ou B (espaces, caractères spéciaux, C, D, etc.) ?
+Supposed that extra characters and special characters are typos so add first verification and deleted them
+this is done in service class
+
+Q: Que faire si la chaîne contient d’autres occurrences de A ou B après qu’un gagnant a déjà été déterminé selon les règles ?
+q:Quelle est la taille maximale que la chaîne de caractères peut atteindre dans ce kata
+Supposed that game is in real life conditions => deleted/ stopped the counter if a winner is designed
+
+Q:Why it's coded this way
+used Players as Object to be better align with Java principles
+
+Q: why a service class 
+In case we will upgrade this kata to a real time game calculator we will keep in the service class a reader
+or a consumer/may be we will need a cash or a database to persist data in case we need stateless application.
+
 ## ▶️ How to Run
 
 ### 1. Compile
@@ -43,7 +66,7 @@ Long 200-character sequence
 ---
 
 
-Sharing here first version of the personnal solution:
+Sharing here first/Draft version of the  solution:
 
      Map<String, Integer> map = new HashMap<>();
      boolean isDeuce = false;
