@@ -23,9 +23,6 @@ The goal is to simulate a **single tennis game** between two players.
 ---
 
 
-Quelle est la taille maximale que la chaîne de caractères peut atteindre dans ce kata ? Théoriquement, une String peut contenir jusqu’à 2 milliards de caractères, mais dans le contexte d’un match de tennis, ce serait irréaliste et risqué (risque de OutOfMemoryError).
-
-
 Q: what design pattern used for this Kata
 I used the State design pattern to make the scoring changing and avoid many dependencies and static shared variables
 used to make simple architecture to keep open for modification in case we need to develop scorer for all game
@@ -45,7 +42,9 @@ Q: why a service class
 In case we will upgrade this kata to a real time game calculator we will keep in the service class a reader
 or a consumer/may be we will need a cash or a database to persist data in case we need stateless application.
 
-## ▶️ How to Run
+## ▶️ to improve
+!!! use ENUM instead of int values for getScore method 15,30,40...
+
 
 ### 1. Compile
 
